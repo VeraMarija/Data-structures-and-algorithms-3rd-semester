@@ -83,7 +83,7 @@ int* presjek_oba_sortirana(int* skupA, int* skupB, int n) {
 int main() {
 	int n;
 	printf("nisu sortirani");
-	for (n = 10000;n <= 100000;n += 10000) {
+	for (n = 10000; n <= 100000; n += 10000) {
 		int* skupA = generiraj(n);
 		int* skupB = generiraj(n);
 		shuffle(skupA, n);
@@ -98,10 +98,10 @@ int main() {
 		double total = ((double)(end - start)) / CLOCKS_PER_SEC;
 		printf("\ntotal---%lf\n", total);
 	}
-	
+
 	printf("\n");
 	printf("jedan sortirani");
-	for (n = 100000;n <= 3000000;n += 300000) {
+	for (n = 100000; n <= 3000000; n += 300000) {
 		int* skupA = generiraj(n);
 		int* skupB = generiraj(n);
 		shuffle(skupA, n);
@@ -117,15 +117,19 @@ int main() {
 		double total = ((double)(end - start)) / CLOCKS_PER_SEC;
 		printf("\ntotal---%lf\n", total);
 	}
-	
+
 	printf("\n");
 	printf("oba sortirana");
-	for (n = 100000;n <= 3000000;n += 300000) {
+	for (n = 100000; n <= 3000000; n += 300000) {
 		int* skupA = generiraj(n);
 		int* skupB = generiraj(n);
+		shuffle(skupA, n);
+		shuffle(skupB, n);
 		size_t start, end;
 		start = clock();
-		int* p =presjek_oba_sortirana( skupA, skupB, n);
+		qsort(skupA, n, sizeof(int), cmpfunc);
+		qsort(skupB, n, sizeof(int), cmpfunc);
+		int* p = presjek_oba_sortirana(skupA, skupB, n);
 		free(p);
 		end = clock();
 		printf("start--%d", start);
