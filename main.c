@@ -1,26 +1,80 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include "longnum.h"
+#include <stdio.h>
+#include <ctype.h>
+#include "bstree.h"
 
-void main() {
-	LongNumber numa = read_longnum("a.txt");
-	print_longnum(numa);
-	LongNumber numb = read_longnum("b.txt");
-	print_longnum(numb);
-	LongNumber numc = add_longnum(numa, numb);
-	print_longnum(numc);
-	LongNumber numd = mul_by_digit(numc, 9);
-	print_longnum(numd);
-	LongNumber nume = mul_by_pow10(numd, 3);
-	print_longnum(nume);
+int readWord(FILE* fd, char* buffer)
+{
+	int c;
 
-	LongNumber numf = mul_longnum(numa, numb);
-	print_longnum(numf);
+	do {
+		c = fgetc(fd);
+		if (c == EOF)
+			return 0;
+	} while (!isalpha(c));
 
-	delete_longnum(numa);
-	delete_longnum(numb);
-	delete_longnum(numc);
-	delete_longnum(numd);
-	delete_longnum(nume);
-	delete_longnum(numf);
+	do {
+		*buffer = tolower(c);
+		buffer++;
+		c = fgetc(fd);
+		if (c == 146)
+			c = '\'';
+	} while (isalpha(c) || c == '\'');
+
+	*buffer = '\0';
+	return 1;
+}
+
+void main()
+{
+	int wc;
+	FILE* fd;
+	char buffer[1024];
+	BSTree bst;
+	bst = NewBSTree();
+
+	// Kreiraj stablo
+	fd = fopen("liar.txt", "rt");
+	if (fd == NULL)
+	{
+		printf("Error opening file.\n");
+		return;
+	}
+
+	wc = 0;
+	while (readWord(fd, buffer))
+	{
+		//printf("%s\n", buffer);
+		AddNode(&bst, _strdup(buffer));
+		wc++;
+	}
+
+	fclose(fd);
+
+	// Ispiši stablo, visinu i broj èvorova
+	PrintBSTree(bst);
+	printf("\nH = %d, N = %d\n", BSTHeight(bst), wc);
+
+	// Snimi i izbriši
+	if ((fd = fopen("stablo.txt", "wt")) == NULL)
+	{
+		printf("Error opening file for writing.\n");
+		return;
+	}
+	SaveBSTree(bst, fd);
+	fclose(fd);
+
+	DeleteBSTree(bst);
+
+	// Uèitaj stablo
+	if ((fd = fopen("stablo.txt", "rt")) == NULL)
+	{
+		printf("Error opening file for reading.\n");
+		return;
+	}
+	bst = LoadBSTree(fd);
+	fclose(fd);
+	PrintBSTree(bst);
+	// Ispiši visinu i izbriši
+	printf("\nH = %d\n", BSTHeight(bst));
+	DeleteBSTree(bst);
 }
